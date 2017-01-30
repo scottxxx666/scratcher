@@ -93,6 +93,7 @@
             isClick = true;
             drawLine(drawCtx, e.layerX, e.layerY, true);
             redrawCanvas();
+            progress();
         }
 
         const mouseenter = function mouseenterHandler (e) {
@@ -133,6 +134,7 @@
             const y = e.touches[0].pageY - canvas.offsetTop;
             drawLine(drawCtx, x, y, false);
             redrawCanvas();
+            progress();
         }
 
         const touchstart = function touchstartFunction (e) {
@@ -141,6 +143,7 @@
             const y = e.touches[0].pageY - canvas.offsetTop;
             drawLine(drawCtx, x, y, true);
             redrawCanvas();
+            progress();
         }
 
         const progress = function progress () {
@@ -156,6 +159,7 @@
             }
 
             const percent = count / total;
+
             if (percent >= 0.9) {
                 picDiv.classList.add('complete');
             }
