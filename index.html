@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scratcher</title>
+</head>
+<body>
+    <style type="text/css">
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #cc0000;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #canvas {
+            background-color: white;
+        }
+
+        #pic-div {
+            position: absolute;
+            transition: all 5s;
+            transform: translateX(-100vw);
+        }
+
+        #pic-div.complete {
+            opacity: 100;
+            display: block;
+            transform: translateX(100vw);
+        }
+
+        #young {
+            width: 768px;
+            height: 432px;
+        }
+
+    </style>
+
+    <div class="container">
+        <div>
+            <canvas id="canvas"></canvas>
+            <div>
+                <button id="again_btn">重來</button>
+            </div>
+        </div>
+        <div id="pic-div">
+            <img id="young" src="young.jpg">
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        const picDiv = document.querySelector('#pic-div');
+        const canvas = document.querySelector('#canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 640;
+        canvas.height = 360;
+
+        const front = new Image();
+        front.src = 'train2.jpg';
+        front.onload = function(){
+            ctx.drawImage(front, 0, 0, canvas.width, canvas.height);
+        }
+
+        const back = new Image();
+        back.src = 'train.jpg';
+
+        const temp = document.createElement('canvas');
+        const tempCtx = temp.getContext('2d');
+        const draw = document.createElement('canvas');
+        const drawCtx = draw.getContext('2d');
+        draw.width = temp.width = canvas.width;
+        draw.height = temp.height = canvas.height;
+
+        let isClick = false;
+
+        const mousemove = function mousemoveHandler (e) {
+            if (!isClick) {
+                return false;
+            }
+            drawLine(drawCtx, e.layerX, e.layerY, false);
+            redrawCanvas();
+            progress();
+        }
+
+        const mousedown = function mousedownHandler (e) {
+            isClick = true;
+            drawLine(drawCtx, e.layerX, e.layerY, true);
+            redrawCanvas();
+        }
+
+        const mouseenter = function mouseenterHandler (e) {
+            if (!isClick) {
+                return false;
+            }
+            freshStart(drawCtx, e.layerX, e.layerY);
+        }
+
+        const drawLine = function drawLineFunction (ctx, x, y, fresh) {
+            ctx.lineWidth = 45;
+            ctx.lineCap = ctx.lineJoin = 'round';
+            if (fresh) {
+                freshStart(ctx, x, y);
+            }
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        const freshStart = function canvasFreshStart (ctx, x, y) {
+            ctx.beginPath();
+            ctx.moveTo(x + 0.01, y);
+        }
+
+        const redrawCanvas = function redrawCanvasFunction () {
+            tempCtx.clearRect(0, 0, temp.width, temp.height);
+            tempCtx.drawImage(draw, 0, 0);
+            tempCtx.globalCompositeOperation = 'source-atop';
+            tempCtx.drawImage(back, 0, 0, temp.width, temp.height);
+            tempCtx.globalCompositeOperation = 'source-over';
+
+            ctx.drawImage(temp, 0, 0);
+        }
+
+        const touchmove = function touchmoveFunction (e) {
+            const x = e.touches[0].pageX - canvas.offsetLeft;
+            const y = e.touches[0].pageY - canvas.offsetTop;
+            drawLine(drawCtx, x, y, false);
+            redrawCanvas();
+        }
+
+        const touchstart = function touchstartFunction (e) {
+            const x = e.touches[0].pageX - canvas.offsetLeft;
+            const y = e.touches[0].pageY - canvas.offsetTop;
+            drawLine(drawCtx, x, y, true);
+            redrawCanvas();
+        }
+
+        const progress = function progress () {
+            const stride = 100;
+            const pixels = drawCtx.getImageData(0, 0, draw.width, draw.height);
+            const data = pixels.data;
+            let count = 0;
+            const total = data.length / stride | 1;
+            for (let i=3; i < data.length; i += stride) {
+                if (data[i] !== 0) {
+                    count++;
+                }
+            }
+
+            const percent = count / total;
+            if (percent >= 0.9) {
+                picDiv.classList.add('complete');
+            }
+        }
+
+        const again = function again () {
+            ctx.drawImage(front, 0, 0, canvas.width, canvas.height);
+            drawCtx.clearRect(0, 0, draw.width, draw.height);
+            picDiv.classList.remove('complete');
+        }
+
+
+        document.addEventListener('mousedown', e => isClick = true);
+        document.addEventListener('mouseup', e => isClick = false);
+
+        canvas.addEventListener('mousemove', mousemove);
+        canvas.addEventListener('mousedown', mousedown);
+        canvas.addEventListener('mouseenter', mouseenter);
+
+        canvas.addEventListener('touchmove', touchmove);
+        canvas.addEventListener('touchstart', touchstart);
+
+        document.querySelector('#again_btn').addEventListener('click', again);
+
+    </script>
+</body>
+</html>
