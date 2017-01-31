@@ -62,13 +62,17 @@
             if (!isClick) {
                 return false;
             }
-            drawLine(drawCtx, e.layerX, e.layerY, false);
+            const x = e.pageX - canvas.offsetLeft;
+            const y = e.pageY - canvas.offsetTop;
+            drawLine(drawCtx, x, y, false);
             redrawCanvas();
         }
 
         const mousedown = function mousedownHandler (e) {
             isClick = true;
-            drawLine(drawCtx, e.layerX, e.layerY, true);
+            const x = e.pageX - canvas.offsetLeft;
+            const y = e.pageY - canvas.offsetTop;
+            drawLine(drawCtx, x, y, true);
             redrawCanvas();
         }
 
@@ -76,7 +80,9 @@
             if (!isClick) {
                 return false;
             }
-            freshStart(drawCtx, e.layerX, e.layerY);
+            const x = e.pageX - canvas.offsetLeft;
+            const y = e.pageY - canvas.offsetTop;
+            freshStart(drawCtx, x, y);
         }
 
         const drawLine = function drawLineFunction (ctx, x, y, fresh) {
