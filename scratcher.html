@@ -56,6 +56,7 @@
         draw.height = temp.height = canvas.height;
 
         let isClick = false;
+        let notPop = true;
 
         const mousemove = function mousemoveHandler (e) {
             if (!isClick) {
@@ -120,7 +121,6 @@
             redrawCanvas();
         }
         
-        let notPop = true;
         const progress = function progress (ctx) {
             const stride = 100;
             const pixels = drawCtx.getImageData(0, 0, draw.width, draw.height);
@@ -142,7 +142,7 @@
                 ctx.fillText("ㄏㄏㄏㄏㄏㄏㄏㄏㄏㄏㄏㄏ", 100, 260);
                 if (notPop) {
                     notPop = false;
-                    alert('刮三小');
+                    alert('刮三小^^');
                 }
             }
         }
